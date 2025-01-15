@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد حسابات Gmail</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" id="bootstrapStyle">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 100px;
+            position: relative;
+        }
+
+        .ibm-plex-sans-arabic-extralight { font-weight: 200; }
+        .ibm-plex-sans-arabic-light { font-weight: 300; }
+        .ibm-plex-sans-arabic-regular { font-weight: 400; }
+        .ibm-plex-sans-arabic-medium { font-weight: 500; }
+        .ibm-plex-sans-arabic-semibold { font-weight: 600; }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-control {
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+
+        textarea {
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .results-section {
+            animation: fadeIn 0.5s ease;
+        }
+
+        #statsSection .card {
+            transition: all 0.3s ease;
+        }
+
+        #statsSection .card:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-3px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #langToggle {
+            border-width: 2px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        #langToggle:hover {
+            background-color: white;
+            color: #0d6efd;
+        }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, #0d6efd, #0b5ed7);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-image: linear-gradient(to right, #0b5ed7, #0a58ca);
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* RTL specific styles */
+        [dir="rtl"] .me-2 {
+            margin-left: 0.5rem !important;
+            margin-right: 0 !important;
+        }
+
+        [dir="rtl"] .ms-2 {
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+        }
+
+        /* LTR specific styles */
+        [dir="ltr"] .me-2 {
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+        }
+
+        [dir="ltr"] .ms-2 {
+            margin-left: 0.5rem !important;
+            margin-right: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand ibm-plex-sans-arabic-medium" href="#">
+                <i class="fas fa-envelope-square me-2"></i>
+                <span class="nav-title">مولد حسابات Gmail</span>
+            </a>
+            <button id="langToggle" class="btn btn-outline-light" onclick="toggleLanguage()">
+                <i class="fas fa-globe me-2"></i>
+                English
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">
+                            <i class="fas fa-magic text-primary me-2"></i>
+                            <span class="main-title">توليد عناوين Gmail المتعددة</span>
+                        </h2>
+                        
+                        <!-- Input Form -->
+                        <div class="form-group mb-4">
+                            <div class="input-group">
+                                <input type="text" dir="rtl" 
+                                       id="emailInput" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="أدخل البريد الإلكتروني"
+                                       dir="ltr">
+                                <button onclick="generateEmails()" 
+                                        class="btn btn-primary btn-lg">
+                                    <i class="fas fa-cog me-2"></i>
+                                    <span class="generate-btn">توليد</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="row mb-4 text-center d-none" id="statsSection">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="stats-title-1">عدد الحسابات المولدة</h5>
+                                        <h3 class="text-primary" id="emailCount">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="stats-title-2">طول اسم المستخدم</h5>
+                                        <h3 class="text-primary" id="usernameLength">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="results-section d-none" id="resultsSection">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0 results-title">النتائج</h4>
+                                <button onclick="copyToClipboard()" 
+                                        class="btn btn-outline-primary">
+                                    <i class="fas fa-copy me-2"></i>
+                                    <span class="copy-btn">نسخ الكل</span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="result" 
+                                         class="form-control" 
+                                         rows="10" 
+                                         readonly 
+                                         dir="ltr"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-info-circle text-primary me-2"></i>
+                            <span class="tips-title">معلومات مهمة</span>
+                        </h5>
+                        <ul class="mb-0" id="tipsList">
+                            <li class="tip-1">جميع العناوين المولدة تؤدي إلى نفس حساب Gmail</li>
+                            <li class="tip-2">Google يتجاهل النقاط في عناوين Gmail</li>
+                            <li class="tip-3">يمكنك استخدام هذه العناوين للتسجيل في مواقع مختلفة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p class="mb-0 ibm-plex-sans-arabic-regular">
+                <span class="footer-text">تم التطوير بواسطة</span> 
+                <a href="#" class="text-light">YassTechNo</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // الترجمات
+        const translations = {
+            ar: {
+                navTitle: 'مولد حسابات Gmail',
+                mainTitle: 'توليد عناوين Gmail المتعددة',
+                inputPlaceholder: 'أدخل البريد الإلكتروني',
+                generateBtn: 'توليد',
+                statsTitle1: 'عدد الحسابات المولدة',
+                statsTitle2: 'طول اسم المستخدم',
+                resultsTitle: 'النتائج',
+                copyBtn: 'نسخ الكل',
+                tipsTitle: 'معلومات مهمة',
+                tip1: 'جميع العناوين المولدة تؤدي إلى نفس حساب Gmail',
+                tip2: 'Google يتجاهل النقاط في عناوين Gmail',
+                tip3: 'يمكنك استخدام هذه العناوين للتسجيل في مواقع مختلفة',
+                footerText: 'تم التطوير بواسطة',
+                copySuccess: 'تم نسخ العناوين بنجاح!',
+                invalidEmail: 'الرجاء إدخال بريد إلكتروني صحيح من Gmail'
+            },
+            en: {
+                navTitle: 'Gmail Account Generator',
+                mainTitle: 'Generate Multiple Gmail Addresses',
+                inputPlaceholder: 'Enter email',
+                generateBtn: 'Generate',
+                statsTitle1: 'Generated Accounts',
+                statsTitle2: 'Username Length',
+                resultsTitle: 'Results',
+                copyBtn: 'Copy All',
+                tipsTitle: 'Important Information',
+                tip1: 'All generated addresses lead to the same Gmail account',
+                tip2: 'Google ignores dots in Gmail addresses',
+                tip3: 'You can use these addresses to register on different websites',
+                footerText: 'Developed by',
+                copySuccess: 'Addresses copied successfully!',
+                invalidEmail: 'Please enter a valid Gmail address'
+            }
+        };
+
+        function toggleLanguage() {
+            const isRTL = document.documentElement.dir === 'rtl';
+            const langToggle = document.getElementById('langToggle');
+            const currentLang = isRTL ? 'en' : 'ar';
+            
+            // تغيير اتجاه الصفحة
+            document.documentElement.dir = isRTL ? 'ltr' : 'rtl';
+            document.documentElement.lang = currentLang;
+            
+            // تغيير رابط Bootstrap
+            const bootstrapLink = document.getElementById('bootstrapStyle');
+            bootstrapLink.href = isRTL ? 
+                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' :
+                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css';
+            
+            // تحديث زر تغيير اللغة
+            langToggle.innerHTML = `<i class="fas fa-globe me-2"></i>${isRTL ? 'عربي' : 'English'}`;
+            
+            // تحديث النصوص
+            const lang = isRTL ? 'en' : 'ar';
+            updateTexts(lang);
+        }
+
+        function updateTexts(lang) {
+            document.querySelector('.nav-title').textContent = translations[lang].navTitle;
+            document.querySelector('.main-title').textContent = translations[lang].mainTitle;
+            document.getElementById('emailInput').placeholder = translations[lang].inputPlaceholder;
+            document.querySelector('.generate-btn').textContent = translations[lang].generateBtn;
+            document.querySelector('.stats-title-1').textContent = translations[lang].statsTitle1;
+            document.querySelector('.stats-title-2').textContent = translations[lang].statsTitle2;
+            document.querySelector('.results-title').textContent = translations[lang].resultsTitle;
+            document.querySelector('.copy-btn').textContent = translations[lang].copyBtn;
+            document.querySelector('.tips-title').textContent = translations[lang].tipsTitle;
+            document.querySelector('.tip-1').textContent = translations[lang].tip1;
+            document.querySelector('.tip-2').textContent = translations[lang].tip2;
+            document.querySelector('.tip-3').textContent = translations[lang].tip3;
+            document.querySelector('.footer-text').textContent = translations[lang].footerText;
+        }
+
+        function generateEmails() {
+            const emailInput = document.getElementById('emailInput');
+            const email = emailInput.value.trim();
+            
+            if (!isValidEmail(email)) {
+                showAlert(translations[document.documentElement.lang].invalidEmail);
+                return;
+            }
+
+            const username = email.split('@')[0];
+            const variations = [];
+            
+            for (let i = 1; i < username.length; i++) {
+                let temp = username.slice(0, i) + '.' + username.slice(i);
+                variations.push(temp + '@gmail.com');
+            }
+
+            document.getElementById('result').value = variations.join('\n');
+            document.getElementById('emailCount').textContent = variations.length;
+            document.getElementById('usernameLength').textContent = username.length;
+            
+            document.getElementById('statsSection').classList.remove('d-none');
+            document.getElementById('resultsSection').classList.remove('d-none');
+        }
+
+        function isValidEmail(email) {
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            return gmailRegex.test(email);
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('result');
+            textarea.select();
+            document.execCommand('copy');
+            
+            showAlert(translations[document.documentElement.lang].copySuccess, 'success');
+        }
+
+        function showAlert(message, type = 'danger') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 ibm-plex-sans-arabic-regular`;
+            alertDiv.style.zIndex = '1000';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        document.getElementById('emailInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateEmails();
+            }
+        });
+    </script>
+</body>
+</html> 
