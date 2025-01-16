@@ -1,354 +1,572 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مولد حسابات Gmail</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap RTL -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" id="bootstrapStyle">
-    <!-- Font Awesome -->
+    <title>Gmail Generator Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            min-height: 100vh;
-            padding-bottom: 100px;
-            position: relative;
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --accent-bg: #e9ecef;
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --hover-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --navbar-bg: linear-gradient(135deg, #0d6efd, #0043a8);
+            --transition-speed: 0.3s;
         }
 
-        .ibm-plex-sans-arabic-extralight { font-weight: 200; }
-        .ibm-plex-sans-arabic-light { font-weight: 300; }
-        .ibm-plex-sans-arabic-regular { font-weight: 400; }
-        .ibm-plex-sans-arabic-medium { font-weight: 500; }
-        .ibm-plex-sans-arabic-semibold { font-weight: 600; }
+        [data-theme="dark"] {
+            --primary-bg: #1a1d20;
+            --secondary-bg: #212529;
+            --accent-bg: #2c3034;
+            --primary-color: #3d8bfd;
+            --secondary-color: #adb5bd;
+            --success-color: #2fb344;
+            --danger-color: #e35d6a;
+            --warning-color: #ffca2c;
+            --info-color: #39cbfb;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --border-color: #373b3e;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --hover-bg: #2c3034;
+            --card-bg: #212529;
+            --input-bg: #2c3034;
+            --navbar-bg: linear-gradient(135deg, #212529, #1a1d20);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            transition: all var(--transition-speed);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: var(--navbar-bg);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
 
         .card {
-            border: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 15px;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: transform var(--transition-speed);
         }
 
         .card:hover {
             transform: translateY(-5px);
         }
 
-        .form-control {
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
             border-radius: 10px;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            padding: 0.75rem 1rem;
+            transition: all var(--transition-speed);
         }
 
         .btn {
             border-radius: 10px;
-            padding: 10px 20px;
+            padding: 0.75rem 1.5rem;
             font-weight: 500;
-        }
-
-        textarea {
-            resize: none;
-            font-family: monospace;
-            font-size: 14px;
-        }
-
-        .results-section {
-            animation: fadeIn 0.5s ease;
-        }
-
-        #statsSection .card {
-            transition: all 0.3s ease;
-        }
-
-        #statsSection .card:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-3px);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #langToggle {
-            border-width: 2px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        #langToggle:hover {
-            background-color: white;
-            color: #0d6efd;
+            transition: all var(--transition-speed);
         }
 
         .btn-primary {
-            background-image: linear-gradient(to right, #0d6efd, #0b5ed7);
-            border: none;
+            background: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
         .btn-primary:hover {
-            background-image: linear-gradient(to right, #0b5ed7, #0a58ca);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
         }
 
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .table {
+            color: var(--text-primary);
         }
 
+        .stats-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--accent-bg));
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all var(--transition-speed);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Update the footer styles */
         footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
+            background-color: var(--secondary-bg) !important;
+            color: var(--text-primary) !important;
+            border-top: 1px solid var(--border-color);
+            transition: all var(--transition-speed);
         }
 
-        /* RTL specific styles */
-        [dir="rtl"] .me-2 {
-            margin-left: 0.5rem !important;
-            margin-right: 0 !important;
+        footer a {
+            color: var(--primary-color) !important;
+            transition: all var(--transition-speed);
         }
 
-        [dir="rtl"] .ms-2 {
-            margin-right: 0.5rem !important;
-            margin-left: 0 !important;
-        }
-
-        /* LTR specific styles */
-        [dir="ltr"] .me-2 {
-            margin-right: 0.5rem !important;
-            margin-left: 0 !important;
-        }
-
-        [dir="ltr"] .ms-2 {
-            margin-left: 0.5rem !important;
-            margin-right: 0 !important;
+        footer a:hover {
+            color: var(--info-color) !important;
+            opacity: 0.9;
         }
     </style>
 </head>
-<body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
-            <a class="navbar-brand ibm-plex-sans-arabic-medium" href="#">
+            <a class="navbar-brand" href="#">
                 <i class="fas fa-envelope-square me-2"></i>
-                <span class="nav-title">مولد حسابات Gmail</span>
+                Gmail Generator Pro
             </a>
-            <button id="langToggle" class="btn btn-outline-light" onclick="toggleLanguage()">
-                <i class="fas fa-globe me-2"></i>
-                English
+            <button class="btn btn-outline-light" onclick="toggleTheme()">
+                <i id="themeIcon" class="fas fa-moon"></i>
             </button>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container my-5">
+    <div class="container mb-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card shadow-lg">
-                    <div class="card-body p-4">
+                <div class="card mb-4">
+                    <div class="card-body">
                         <h2 class="text-center mb-4">
-                            <i class="fas fa-magic text-primary me-2"></i>
-                            <span class="main-title">توليد عناوين Gmail المتعددة</span>
+                            Generate Gmail Variations
                         </h2>
                         
-                        <!-- Input Form -->
                         <div class="form-group mb-4">
                             <div class="input-group">
-                                <input type="text" dir="rtl" 
+                                <input type="text" 
                                        id="emailInput" 
                                        class="form-control form-control-lg" 
-                                       placeholder="أدخل البريد الإلكتروني"
-                                       dir="ltr">
+                                       placeholder="Enter email">
                                 <button onclick="generateEmails()" 
                                         class="btn btn-primary btn-lg">
                                     <i class="fas fa-cog me-2"></i>
-                                    <span class="generate-btn">توليد</span>
+                                    Generate
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Statistics -->
-                        <div class="row mb-4 text-center d-none" id="statsSection">
+                        <div class="row">
                             <div class="col-md-6">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h5 class="stats-title-1">عدد الحسابات المولدة</h5>
-                                        <h3 class="text-primary" id="emailCount">0</h3>
-                                    </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Number of Accounts</label>
+                                    <select class="form-select" id="accountLimit">
+                                        <option value="50">50 accounts</option>
+                                        <option value="100">100 accounts</option>
+                                        <option value="500">500 accounts</option>
+                                        <option value="1000">1000 accounts</option>
+                                        <option value="0" selected>All possible</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h5 class="stats-title-2">طول اسم المستخدم</h5>
-                                        <h3 class="text-primary" id="usernameLength">0</h3>
-                                    </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Sort Results</label>
+                                    <select class="form-select" id="sortOrder">
+                                        <option value="dots">Number of Dots</option>
+                                        <option value="alpha">Alphabetical</option>
+                                        <option value="length">Length</option>
+                                    </select>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Results -->
-                        <div class="results-section d-none" id="resultsSection">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0 results-title">النتائج</h4>
-                                <button onclick="copyToClipboard()" 
-                                        class="btn btn-outline-primary">
-                                    <i class="fas fa-copy me-2"></i>
-                                    <span class="copy-btn">نسخ الكل</span>
-                                </button>
-                            </div>
-                            <div class="form-group">
-                                <textarea id="result" 
-                                         class="form-control" 
-                                         rows="10" 
-                                         readonly 
-                                         dir="ltr"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tips Card -->
-                <div class="card mt-4 shadow-sm">
+                <div class="card mb-4 d-none" id="resultsCard">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-info-circle text-primary me-2"></i>
-                            <span class="tips-title">معلومات مهمة</span>
-                        </h5>
-                        <ul class="mb-0" id="tipsList">
-                            <li class="tip-1">جميع العناوين المولدة تؤدي إلى نفس حساب Gmail</li>
-                            <li class="tip-2">Google يتجاهل النقاط في عناوين Gmail</li>
-                            <li class="tip-3">يمكنك استخدام هذه العناوين للتسجيل في مواقع مختلفة</li>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Results</h4>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary" onclick="copyAllToClipboard()">
+                                    <i class="fas fa-copy me-2"></i>
+                                    Copy All
+                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-download me-2"></i>
+                                        Export
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="exportResults('txt')">
+                                                <i class="fas fa-file-alt me-2"></i>TXT
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="exportResults('csv')">
+                                                <i class="fas fa-file-csv me-2"></i>CSV
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="exportResults('json')">
+                                                <i class="fas fa-file-code me-2"></i>JSON
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <input type="text" 
+                                   id="searchInput" 
+                                   class="form-control" 
+                                   placeholder="Search results..."
+                                   oninput="filterResults()">
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Email</th>
+                                        <th>Dots</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTable"></tbody>
+                            </table>
+                        </div>
+
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="pagination"></ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card mb-4 d-none" id="statsCard">
+                    <div class="card-body">
+                        <h4 class="mb-4">Statistics</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stats-card text-center">
+                                    <div class="stats-number" id="totalEmails">0</div>
+                                    <div class="stats-label">Total Emails</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-card text-center">
+                                    <div class="stats-number" id="avgDots">0</div>
+                                    <div class="stats-label">Average Dots</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-card text-center">
+                                    <div class="stats-number" id="maxDots">0</div>
+                                    <div class="stats-label">Maximum Dots</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container mt-4">
+                            <canvas id="dotsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
+    <footer class="mt-auto py-3">
         <div class="container text-center">
-            <p class="mb-0 ibm-plex-sans-arabic-regular">
-                <span class="footer-text">تم التطوير بواسطة</span> 
-                <a href="#" class="text-light">YassTechNo</a>
+            <p class="mb-0">
+                Developed by <a href="https://lnk.bio/YassTechNo" class="text-decoration-none">YassTechNo</a>
             </p>
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // الترجمات
-        const translations = {
-            ar: {
-                navTitle: 'مولد حسابات Gmail',
-                mainTitle: 'توليد عناوين Gmail المتعددة',
-                inputPlaceholder: 'أدخل البريد الإلكتروني',
-                generateBtn: 'توليد',
-                statsTitle1: 'عدد الحسابات المولدة',
-                statsTitle2: 'طول اسم المستخدم',
-                resultsTitle: 'النتائج',
-                copyBtn: 'نسخ الكل',
-                tipsTitle: 'معلومات مهمة',
-                tip1: 'جميع العناوين المولدة تؤدي إلى نفس حساب Gmail',
-                tip2: 'Google يتجاهل النقاط في عناوين Gmail',
-                tip3: 'يمكنك استخدام هذه العناوين للتسجيل في مواقع مختلفة',
-                footerText: 'تم التطوير بواسطة',
-                copySuccess: 'تم نسخ العناوين بنجاح!',
-                invalidEmail: 'الرجاء إدخال بريد إلكتروني صحيح من Gmail'
-            },
-            en: {
-                navTitle: 'Gmail Account Generator',
-                mainTitle: 'Generate Multiple Gmail Addresses',
-                inputPlaceholder: 'Enter email',
-                generateBtn: 'Generate',
-                statsTitle1: 'Generated Accounts',
-                statsTitle2: 'Username Length',
-                resultsTitle: 'Results',
-                copyBtn: 'Copy All',
-                tipsTitle: 'Important Information',
-                tip1: 'All generated addresses lead to the same Gmail account',
-                tip2: 'Google ignores dots in Gmail addresses',
-                tip3: 'You can use these addresses to register on different websites',
-                footerText: 'Developed by',
-                copySuccess: 'Addresses copied successfully!',
-                invalidEmail: 'Please enter a valid Gmail address'
-            }
-        };
-
-        function toggleLanguage() {
-            const isRTL = document.documentElement.dir === 'rtl';
-            const langToggle = document.getElementById('langToggle');
-            const currentLang = isRTL ? 'en' : 'ar';
-            
-            // تغيير اتجاه الصفحة
-            document.documentElement.dir = isRTL ? 'ltr' : 'rtl';
-            document.documentElement.lang = currentLang;
-            
-            // تغيير رابط Bootstrap
-            const bootstrapLink = document.getElementById('bootstrapStyle');
-            bootstrapLink.href = isRTL ? 
-                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' :
-                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css';
-            
-            // تحديث زر تغيير اللغة
-            langToggle.innerHTML = `<i class="fas fa-globe me-2"></i>${isRTL ? 'عربي' : 'English'}`;
-            
-            // تحديث النصوص
-            const lang = isRTL ? 'en' : 'ar';
-            updateTexts(lang);
-        }
-
-        function updateTexts(lang) {
-            document.querySelector('.nav-title').textContent = translations[lang].navTitle;
-            document.querySelector('.main-title').textContent = translations[lang].mainTitle;
-            document.getElementById('emailInput').placeholder = translations[lang].inputPlaceholder;
-            document.querySelector('.generate-btn').textContent = translations[lang].generateBtn;
-            document.querySelector('.stats-title-1').textContent = translations[lang].statsTitle1;
-            document.querySelector('.stats-title-2').textContent = translations[lang].statsTitle2;
-            document.querySelector('.results-title').textContent = translations[lang].resultsTitle;
-            document.querySelector('.copy-btn').textContent = translations[lang].copyBtn;
-            document.querySelector('.tips-title').textContent = translations[lang].tipsTitle;
-            document.querySelector('.tip-1').textContent = translations[lang].tip1;
-            document.querySelector('.tip-2').textContent = translations[lang].tip2;
-            document.querySelector('.tip-3').textContent = translations[lang].tip3;
-            document.querySelector('.footer-text').textContent = translations[lang].footerText;
-        }
+        let currentEmails = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let chart = null;
 
         function generateEmails() {
             const emailInput = document.getElementById('emailInput');
             const email = emailInput.value.trim();
             
             if (!isValidEmail(email)) {
-                showAlert(translations[document.documentElement.lang].invalidEmail);
+                showAlert('Please enter a valid Gmail address');
                 return;
             }
 
             const username = email.split('@')[0];
-            const variations = [];
+            const accountLimit = parseInt(document.getElementById('accountLimit').value);
+            let variations = [];
             
-            for (let i = 1; i < username.length; i++) {
-                let temp = username.slice(0, i) + '.' + username.slice(i);
-                variations.push(temp + '@gmail.com');
+            function generateAllDotCombinations(str, positions = [], start = 0) {
+                if (positions.length > 0) {
+                    let isValid = true;
+                    for (let i = 0; i < positions.length - 1; i++) {
+                        if (positions[i + 1] - positions[i] === 1) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isValid) {
+                        let result = str.split('');
+                        for (let pos of positions) {
+                            result.splice(pos, 0, '.');
+                        }
+                        variations.push(result.join('') + '@gmail.com');
+                    }
+                }
+                
+                for (let i = start; i < str.length - 1; i++) {
+                    generateAllDotCombinations(str, [...positions, i + 1], i + 1);
+                }
+            }
+            
+            generateAllDotCombinations(username);
+            
+            const sortOrder = document.getElementById('sortOrder').value;
+            variations.sort((a, b) => {
+                switch(sortOrder) {
+                    case 'dots':
+                        return (a.match(/\./g) || []).length - (b.match(/\./g) || []).length;
+                    case 'alpha':
+                        return a.localeCompare(b);
+                    case 'length':
+                        return a.length - b.length;
+                    default:
+                        return 0;
+                }
+            });
+
+            if (accountLimit > 0) {
+                variations = variations.slice(0, accountLimit);
             }
 
-            document.getElementById('result').value = variations.join('\n');
-            document.getElementById('emailCount').textContent = variations.length;
-            document.getElementById('usernameLength').textContent = username.length;
+            currentEmails = variations;
+            currentPage = 1;
             
-            document.getElementById('statsSection').classList.remove('d-none');
-            document.getElementById('resultsSection').classList.remove('d-none');
+            document.getElementById('resultsCard').classList.remove('d-none');
+            document.getElementById('statsCard').classList.remove('d-none');
+            
+            showResults();
+            updateStats();
+        }
+
+        function showResults() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageEmails = currentEmails.slice(start, end);
+            
+            const tbody = document.getElementById('resultsTable');
+            tbody.innerHTML = '';
+            
+            pageEmails.forEach((email, index) => {
+                const dots = (email.match(/\./g) || []).length;
+                const row = `
+                    <tr>
+                        <td>${start + index + 1}</td>
+                        <td>${email}</td>
+                        <td>${dots}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="copyEmail('${email}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+            
+            updatePagination();
+        }
+
+        function updateStats() {
+            const totalEmails = currentEmails.length;
+            const dots = currentEmails.map(email => (email.match(/\./g) || []).length);
+            const avgDots = dots.reduce((a, b) => a + b, 0) / totalEmails;
+            const maxDots = Math.max(...dots);
+            
+            document.getElementById('totalEmails').textContent = totalEmails;
+            document.getElementById('avgDots').textContent = avgDots.toFixed(1);
+            document.getElementById('maxDots').textContent = maxDots;
+            
+            updateChart(dots);
+        }
+
+        function updateChart(dots) {
+            const ctx = document.getElementById('dotsChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const counts = {};
+            dots.forEach(num => counts[num] = (counts[num] || 0) + 1);
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: 'Number of accounts per dots',
+                        data: Object.values(counts),
+                        backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(currentEmails.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            pagination.innerHTML += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+                </li>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.innerHTML += `
+                    <li class="page-item ${currentPage === i ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `;
+            }
+            
+            pagination.innerHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+                </li>
+            `;
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(currentEmails.length / itemsPerPage)) return;
+            currentPage = page;
+            showResults();
+        }
+
+        function copyEmail(email) {
+            navigator.clipboard.writeText(email).then(() => {
+                showAlert('Copied successfully!', 'success');
+            });
+        }
+
+        function copyAllToClipboard() {
+            const text = currentEmails.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('All emails copied successfully!', 'success');
+            });
+        }
+
+        function exportResults(format) {
+            let content = '';
+            let filename = `gmail_variations_${Date.now()}`;
+            
+            switch(format) {
+                case 'txt':
+                    content = currentEmails.join('\n');
+                    filename += '.txt';
+                    break;
+                case 'csv':
+                    content = 'Email,Dots\n';
+                    currentEmails.forEach(email => {
+                        const dots = (email.match(/\./g) || []).length;
+                        content += `${email},${dots}\n`;
+                    });
+                    filename += '.csv';
+                    break;
+                case 'json':
+                    content = JSON.stringify(currentEmails, null, 2);
+                    filename += '.json';
+                    break;
+            }
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function filterResults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredEmails = currentEmails.filter(email => 
+                email.toLowerCase().includes(searchTerm)
+            );
+            
+            const tbody = document.getElementById('resultsTable');
+            tbody.innerHTML = '';
+            
+            filteredEmails.forEach((email, index) => {
+                const dots = (email.match(/\./g) || []).length;
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${email}</td>
+                        <td>${dots}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="copyEmail('${email}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
         }
 
         function isValidEmail(email) {
@@ -356,17 +574,9 @@
             return gmailRegex.test(email);
         }
 
-        function copyToClipboard() {
-            const textarea = document.getElementById('result');
-            textarea.select();
-            document.execCommand('copy');
-            
-            showAlert(translations[document.documentElement.lang].copySuccess, 'success');
-        }
-
         function showAlert(message, type = 'danger') {
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 ibm-plex-sans-arabic-regular`;
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
             alertDiv.style.zIndex = '1000';
             alertDiv.innerHTML = `
                 ${message}
@@ -380,11 +590,29 @@
             }, 3000);
         }
 
-        document.getElementById('emailInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                generateEmails();
+        function toggleTheme() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            const themeIcon = document.getElementById('themeIcon');
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            if (chart) {
+                chart.destroy();
+                updateStats();
             }
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = 
+                savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         });
     </script>
 </body>
-</html> 
+</html>
